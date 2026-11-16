@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "seed": "tsx scripts/seed.ts",
+    "test:rls": "tsx scripts/rls-test.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
@@ -29,9 +31,11 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
+    "dotenv": "^18.0.10",
     "oxlint": "^1.90.0",
     "supabase": "^3.1.0",
     "tailwindcss": "^4.3.5",
+    "tsx": "^4.23.15",
     "typescript": "~7.0.2",
     "vite": "^8.3.6"
   }
