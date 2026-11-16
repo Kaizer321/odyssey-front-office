@@ -18,3 +18,6 @@ export function addDays(dateStr: string, n: number): string {
 
 export const mmss = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`
 export const formatTime = (iso: string, tz: string) => new Date(iso).toLocaleTimeString('en-AU', { timeZone: tz, hour: 'numeric', minute: '2-digit', second: '2-digit' })
+import { formatDistanceToNow } from 'date-fns'
+
+export const ago = (iso: string | null) => iso ? formatDistanceToNow(new Date(iso), { addSuffix: true }) : '—'

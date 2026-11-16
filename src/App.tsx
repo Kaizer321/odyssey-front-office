@@ -7,6 +7,8 @@ import Placeholder from '@/components/Placeholder'
 import OverviewPage from '@/features/client/OverviewPage'
 import ActivityPage from '@/features/client/ActivityPage'
 import CallDetailPage from '@/features/client/CallDetailPage'
+import HealthPage from '@/features/admin/HealthPage'
+import ReviewPage from '@/features/admin/ReviewPage'
 
 export default function App() {
   return <Routes>
@@ -21,8 +23,8 @@ export default function App() {
     </Route>
     <Route element={<RequireRole allow={['admin']} />}>
       <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<Placeholder title="Client health" />} />
-        <Route path="review" element={<Placeholder title="Review queue" />} />
+        <Route index element={<HealthPage />} />
+        <Route path="review" element={<ReviewPage />} />
         <Route path="usage" element={<Placeholder title="Usage vs cost" />} />
         <Route path="onboarding" element={<Placeholder title="Onboarding tracker" />} />
       </Route>

@@ -42,6 +42,12 @@ async function main() {
   const { data: flag, error: ownError } = await owner.from('flags').insert({ client_id: clientId, call_id: ownCall?.id, flagged_by: user?.id, source: 'client', reason: 'rls test' }).select('id').single()
   check('Owner can flag own call', !ownError)
   if (flag) await admin.from('flags').delete().eq('id', flag.id)
+  const { data: ownerHealth } = await owner.rpc('admin_client_health')
+  check('Owner gets no admin health data', Array.isArray(ownerHealth) && ownerHealth.length === 0)
+  const { error: sampleErr } = await owner.rpc('admin_add_weekly_sample', { p_count: 1 })
+  check('Owner cannot run the random sample', !!sampleErr)
+  const { data: adminHealth } = await admin.rpc('admin_client_health')
+  check('Admin sees health for all 4 clients', adminHealth?.length === 4)
   console.log(failed ? `\n${failed} check(s) FAILED` : '\nAll RLS checks passed')
   process.exit(failed ? 1 : 0)
 }
