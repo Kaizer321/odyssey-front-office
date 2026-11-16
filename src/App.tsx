@@ -4,6 +4,7 @@ import LoginPage from '@/features/auth/LoginPage'
 import ClientLayout from '@/features/client/ClientLayout'
 import AdminLayout from '@/features/admin/AdminLayout'
 import Placeholder from '@/components/Placeholder'
+import OverviewPage from '@/features/client/OverviewPage'
 
 export default function App() {
   return <Routes>
@@ -11,7 +12,7 @@ export default function App() {
     <Route path="/login" element={<LoginPage />} />
     <Route element={<RequireRole allow={['owner', 'office_manager']} />}>
       <Route path="/app" element={<ClientLayout />}>
-        <Route index element={<Placeholder title="Overview" />} />
+        <Route index element={<OverviewPage />} />
         <Route path="activity" element={<Placeholder title="Activity log" />} />
         <Route path="calls/:callId" element={<Placeholder title="Call detail" />} />
       </Route>
