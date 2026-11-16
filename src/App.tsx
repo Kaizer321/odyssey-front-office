@@ -5,6 +5,7 @@ import ClientLayout from '@/features/client/ClientLayout'
 import AdminLayout from '@/features/admin/AdminLayout'
 import Placeholder from '@/components/Placeholder'
 import OverviewPage from '@/features/client/OverviewPage'
+import ActivityPage from '@/features/client/ActivityPage'
 
 export default function App() {
   return <Routes>
@@ -13,7 +14,7 @@ export default function App() {
     <Route element={<RequireRole allow={['owner', 'office_manager']} />}>
       <Route path="/app" element={<ClientLayout />}>
         <Route index element={<OverviewPage />} />
-        <Route path="activity" element={<Placeholder title="Activity log" />} />
+        <Route path="activity" element={<ActivityPage />} />
         <Route path="calls/:callId" element={<Placeholder title="Call detail" />} />
       </Route>
     </Route>
