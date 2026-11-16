@@ -3,12 +3,13 @@ import { HomeRedirect, RequireRole } from '@/features/auth/guards'
 import LoginPage from '@/features/auth/LoginPage'
 import ClientLayout from '@/features/client/ClientLayout'
 import AdminLayout from '@/features/admin/AdminLayout'
-import Placeholder from '@/components/Placeholder'
 import OverviewPage from '@/features/client/OverviewPage'
 import ActivityPage from '@/features/client/ActivityPage'
 import CallDetailPage from '@/features/client/CallDetailPage'
 import HealthPage from '@/features/admin/HealthPage'
 import ReviewPage from '@/features/admin/ReviewPage'
+import UsagePage from '@/features/admin/UsagePage'
+import OnboardingPage from '@/features/admin/OnboardingPage'
 
 export default function App() {
   return <Routes>
@@ -25,8 +26,8 @@ export default function App() {
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<HealthPage />} />
         <Route path="review" element={<ReviewPage />} />
-        <Route path="usage" element={<Placeholder title="Usage vs cost" />} />
-        <Route path="onboarding" element={<Placeholder title="Onboarding tracker" />} />
+        <Route path="usage" element={<UsagePage />} />
+        <Route path="onboarding" element={<OnboardingPage />} />
       </Route>
     </Route>
     <Route path="*" element={<Navigate to="/" replace />} />

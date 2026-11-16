@@ -1,0 +1,16 @@
+import { useMemo } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Check } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Pill } from '@/features/client/components'
+import { label } from '@/lib/format'
+import { advanceOnboarding, fetchOnboarding, type OnboardingPhase } from './api'
+
+const phaseTone = { done: 'good', in_progress: 'warn', pending: 'neutral' } as const
+export default function OnboardingPage() {
+  const qc = useQueryClient(); const query = useQuery({ queryKey: ['admin', 'onboarding'], queryFn: fetchOnboarding }); const advance = useMutation({ mutationFn: advanceOnboarding, onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'onboarding'] }) })
+  const clients = useMemo(() => { const map = new Map<string, OnboardingPhase[]>(); for (const phase of query.data ?? []) map.set(phase.client_id, [...(map.get(phase.client_id) ?? []), phase]); return [...map.values()].map((phases) => { const sorted = [...phases].sort((a, b) => a.phase - b.phase); const done = sorted.filter((p) => p.status === 'done').length; return { phases: sorted, done, name: sorted[0].client_name, trade: sorted[0].trade } }).sort((a, b) => a.done / a.phases.length - b.done / b.phases.length || a.name.localeCompare(b.name)) }, [query.data])
+  if (query.isError) return <p className="text-sm text-red-600">Couldn’t load onboarding: {(query.error as Error).message}</p>
+  return <div className="space-y-4"><div><h1 className="text-2xl font-semibold">Onboarding tracker</h1><p className="text-sm text-muted-foreground">Where each client is in the six onboarding phases</p></div>{query.isLoading && <p className="text-sm text-muted-foreground">Loading…</p>}{clients.map((client) => { const total = client.phases.length; const complete = client.done === total; const current = client.phases.find((p) => p.status !== 'done'); return <Card key={client.phases[0].client_id}><CardHeader className="flex-row items-start justify-between gap-3 space-y-0"><div><CardTitle className="text-base">{client.name}</CardTitle><p className="text-xs text-muted-foreground">{client.trade} · {client.done} of {total} phases complete</p></div>{complete ? <Pill tone="good">Live</Pill> : <Button size="sm" disabled={advance.isPending} onClick={() => advance.mutate(client.phases)}>{current?.status === 'pending' ? 'Start next phase' : 'Complete current phase'}</Button>}</CardHeader><CardContent className="space-y-4"><div className="h-2 overflow-hidden rounded-full bg-muted"><div className="h-full bg-green-500 transition-all" style={{ width: `${(client.done / total) * 100}%` }} /></div><ol className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">{client.phases.map((phase) => <li key={phase.phase} className="rounded-md border p-3 text-sm"><div className="mb-1 flex items-center gap-1 text-xs text-muted-foreground">{phase.status === 'done' && <Check className="size-3 text-green-600" />} Phase {phase.phase}</div><div className="mb-2 font-medium">{phase.name}</div><Pill tone={phaseTone[phase.status]}>{label(phase.status)}</Pill></li>)}</ol></CardContent></Card>})}</div>
+}

@@ -48,6 +48,12 @@ async function main() {
   check('Owner cannot run the random sample', !!sampleErr)
   const { data: adminHealth } = await admin.rpc('admin_client_health')
   check('Admin sees health for all 4 clients', adminHealth?.length === 4)
+  const today = new Date().toISOString().slice(0, 10)
+  const { data: ownerUsage } = await owner.rpc('admin_usage', { p_start: '2020-01-01', p_end: today })
+  check('Owner gets no usage or cost data', Array.isArray(ownerUsage) && ownerUsage.length === 0)
+  check('Owner cannot read onboarding phases', (await count(owner, 'onboarding_phases')) === 0)
+  const { data: adminUsage } = await admin.rpc('admin_usage', { p_start: '2020-01-01', p_end: today })
+  check('Admin sees usage for all 4 clients', adminUsage?.length === 4)
   console.log(failed ? `\n${failed} check(s) FAILED` : '\nAll RLS checks passed')
   process.exit(failed ? 1 : 0)
 }
