@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from './AuthProvider'
 import { homeFor } from './guards'
+import { isSupabaseConfigured } from '@/lib/supabase'
 
 const DOMAIN = 'demo.odyssey.test'
 const PASSWORD = 'Demo1234!'
@@ -22,6 +23,7 @@ export default function LoginPage() {
   if (session && profile) return <Navigate to={homeFor(profile.role)} replace />
   const submit = async (nextEmail: string, nextPassword: string) => { setBusy(true); setError(null); const err = await signIn(nextEmail, nextPassword); if (err) setError(err); setBusy(false) }
   return <div className="flex min-h-screen items-center justify-center bg-muted/30 p-4"><div className="w-full max-w-md space-y-4">
+    {!isSupabaseConfigured && <div role="status" className="rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">Setup pending: the backend connection is not configured yet (missing VITE_SUPABASE_ANON_KEY), so sign-in is unavailable on this deploy.</div>}
     <Card><CardHeader><CardTitle>Odyssey Front Office</CardTitle><CardDescription>Sign in to your dashboard</CardDescription></CardHeader><CardContent>
       <form className="space-y-4" onSubmit={(event) => { event.preventDefault(); void submit(email, password) }}>
         <div className="space-y-2"><Label htmlFor="email">Email</Label><Input id="email" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} required /></div>
