@@ -68,6 +68,15 @@ body {
   margin: 0;
 }
 
+@media print {
+  @page { margin: 14mm; }
+  aside, .no-print { display: none !important; }
+  main { padding: 0 !important; }
+  body { background: #fff; }
+  .avoid-break { break-inside: avoid; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
 h1,
 h2 {
   font-family: var(--heading);

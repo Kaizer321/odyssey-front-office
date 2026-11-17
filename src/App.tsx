@@ -10,6 +10,7 @@ import HealthPage from '@/features/admin/HealthPage'
 import ReviewPage from '@/features/admin/ReviewPage'
 import UsagePage from '@/features/admin/UsagePage'
 import OnboardingPage from '@/features/admin/OnboardingPage'
+import ReportPage from '@/features/client/ReportPage'
 
 export default function App() {
   return <Routes>
@@ -20,6 +21,7 @@ export default function App() {
         <Route index element={<OverviewPage />} />
         <Route path="activity" element={<ActivityPage />} />
         <Route path="calls/:callId" element={<CallDetailPage />} />
+        <Route path="report" element={<ReportPage />} />
       </Route>
     </Route>
     <Route element={<RequireRole allow={['admin']} />}>

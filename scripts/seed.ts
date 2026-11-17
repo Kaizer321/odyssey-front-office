@@ -90,6 +90,7 @@ async function main() {
   const tests: Record<string, unknown>[] = []
   const errors: Record<string, unknown>[] = []
   const flaggable: { client_id: string; call_id: string; owner: string }[] = []
+  const reportNotes: any[] = []
 
   const adminId = await createUser(`admin@${DOMAIN}`, 'Odyssey Admin')
   profiles.push({ id: adminId, client_id: null, role: 'admin', full_name: 'Odyssey Admin', email: `admin@${DOMAIN}` })
@@ -105,7 +106,7 @@ async function main() {
 
     const customerPool: { id: string; name: string; phone: string; address: string }[] = []
     const usageByDay = new Map<string, { minutes: number; sms: number }>()
-    for (let day = 89; day >= 0; day--) {
+    for (let day = 139; day >= 0; day--) {
       const date = new Date(now.getTime() - day * DAY)
       const count = Math.round(18 * spec.scale * (.8 + rand() * .5))
       for (let i = 0; i < count; i++) {
@@ -133,6 +134,9 @@ async function main() {
         const dayKey = received.toISOString().slice(0, 10); const u = usageByDay.get(dayKey) ?? { minutes: 0, sms: 0 }; u.minutes += duration / 60; u.sms += category === 'question' ? 0 : 1; usageByDay.set(dayKey, u)
       }
     }
+    const changes = [`Added "${spec.urgent[0] ?? 'emergency'}" wording to the emergency trigger phrases`, 'Updated the call-out fee answer so the agent quotes it consistently', 'Shortened the after-hours greeting so callers reach the address step faster', 'Added two new service-area suburbs to the agent knowledge base']
+    const suggestions = ['Turn on ServiceM8 booking reminders to reduce no-shows', 'Add a Saturday-morning overflow window for busy periods', 'Enable review requests after completed jobs', 'Review quote follow-ups: quote requests are the biggest unconverted group']
+    for (let back = 1; back <= 3; back++) reportNotes.push({ client_id: clientId, month: new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - back, 1)).toISOString().slice(0, 10), changes: [0, 1, 2].map((k) => changes[(back + k) % changes.length]), suggestions: [0, 1, 2].map((k) => suggestions[(back + k) % suggestions.length]) })
     for (const [day, u] of usageByDay) usage.push({ client_id: clientId, day, retell_minutes: +u.minutes.toFixed(2), sms_count: u.sms, cost: +(u.minutes * .14 + u.sms * .04).toFixed(2) })
     for (let i = 29; i >= 0; i--) tests.push({ client_id: clientId, ran_at: new Date(now.getTime() - i * DAY).toISOString(), passed: spec.status !== 'error' || i > 1, details: spec.status === 'error' && i <= 1 ? 'Booking step timed out: ServiceM8 did not respond' : 'All 5 call flows passed' })
     if (spec.status === 'error') for (let i = 0; i < 3; i++) errors.push({ client_id: clientId, source: 'ServiceM8', message: 'API timeout while checking staff availability', occurred_at: new Date(now.getTime() - i * 5 * 3_600_000).toISOString(), resolved: false })
@@ -141,7 +145,7 @@ async function main() {
   const reasons = ['Agent misheard the address', 'Wrong call-out fee quoted', 'Caller wanted a human', 'Great call, use as an example']
   const flags = flaggable.slice(0, 10).map((f, i) => ({ client_id: f.client_id, call_id: f.call_id, flagged_by: i < 6 ? f.owner : null, source: i < 6 ? 'client' : 'random_sample', reason: i < 6 ? pick(reasons) : null, status: i < 7 ? 'open' : 'reviewed', admin_notes: i < 7 ? null : 'Reviewed in demo seed.', created_at: new Date(now.getTime() - int(1, 20) * DAY).toISOString(), reviewed_at: i < 7 ? null : now.toISOString() }))
   console.log('Inserting...')
-  await insert('clients', clients); await insert('profiles', profiles); await insert('onboarding_phases', phasesRows); await insert('customers', customers); await insert('enquiries', enquiries); await insert('calls', calls); await insert('jobs', jobs); await insert('emergencies', emergencies); await insert('post_call_events', events); await insert('flags', flags); await insert('usage_daily', usage); await insert('test_runs', tests); await insert('integration_errors', errors)
+  await insert('clients', clients); await insert('report_notes', reportNotes); await insert('profiles', profiles); await insert('onboarding_phases', phasesRows); await insert('customers', customers); await insert('enquiries', enquiries); await insert('calls', calls); await insert('jobs', jobs); await insert('emergencies', emergencies); await insert('post_call_events', events); await insert('flags', flags); await insert('usage_daily', usage); await insert('test_runs', tests); await insert('integration_errors', errors)
   console.log(`\nDone. Demo password: ${PASSWORD}`)
   console.log(`Admin: admin@${DOMAIN}`)
   console.log(`Client owner: owner.harbour@${DOMAIN}`)

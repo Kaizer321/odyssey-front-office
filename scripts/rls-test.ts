@@ -54,6 +54,12 @@ async function main() {
   check('Owner cannot read onboarding phases', (await count(owner, 'onboarding_phases')) === 0)
   const { data: adminUsage } = await admin.rpc('admin_usage', { p_start: '2020-01-01', p_end: today })
   check('Admin sees usage for all 4 clients', adminUsage?.length === 4)
+  check('Owner sees only their own 3 report notes', (await count(owner, 'report_notes')) === 3)
+  check('Admin sees all 9 report notes', (await count(admin, 'report_notes')) === 9)
+  const { error: noteErr } = await owner.from('report_notes').insert({ client_id: clientId, month: '2020-01-01' })
+  check('Owner cannot write report notes', !!noteErr)
+  const { data: ownerCatches } = await owner.rpc('report_best_catches', { p_start: '2020-01-01T00:00:00Z', p_end: new Date().toISOString(), p_limit: 5 })
+  check('Owner gets best catches for their own client only', Array.isArray(ownerCatches) && ownerCatches.length > 0)
   console.log(failed ? `\n${failed} check(s) FAILED` : '\nAll RLS checks passed')
   process.exit(failed ? 1 : 0)
 }
