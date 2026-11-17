@@ -1,0 +1,4 @@
+[build]
+  # Install dependencies (including dev tools like tsc and vite) if they are not already present, then build.
+  command = "(test -x node_modules/.bin/tsc || npm ci --include=dev) && npm run build"
+  publish = "dist"
