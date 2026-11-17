@@ -1,6 +1,8 @@
-import 'dotenv/config'
+import { config } from 'dotenv'
 import { createClient } from '@supabase/supabase-js'
 import { readFile } from 'node:fs/promises'
+
+config({ path: process.env.ENV_FILE ?? '.env.scripts' })
 
 const url = process.env.SUPABASE_URL ?? ''
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? ''

@@ -1,7 +1,7 @@
 import { config } from 'dotenv'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
-config({ path: '.env.scripts' })
+config({ path: process.env.ENV_FILE ?? '.env.scripts' })
 const url = process.env.SUPABASE_URL!
 const anon = process.env.SUPABASE_ANON_KEY!
 const PASSWORD = 'Demo1234!'

@@ -2,10 +2,12 @@ import { config } from 'dotenv'
 import { createClient } from '@supabase/supabase-js'
 import { randomUUID } from 'node:crypto'
 
-config({ path: '.env.scripts' })
+config({ path: process.env.ENV_FILE ?? '.env.scripts' })
 const url = process.env.SUPABASE_URL
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY
-if (!url || !key) throw new Error('Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env.scripts')
+if (!url || !key) throw new Error('Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in the env file')
+if (!/127\.0\.0\.1|localhost/.test(url) && process.env.CONFIRM_REMOTE !== 'yes') throw new Error(`Refusing to wipe and reseed the remote database ${url}. Use npm run seed:hosted.`)
+console.log(`Target database: ${url}`)
 const db = createClient(url, key, { auth: { persistSession: false } })
 
 const DOMAIN = 'demo.odyssey.test'
